@@ -1,0 +1,199 @@
+
+master_SPI.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000000b0  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800060  00800060  00000104  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .comment      00000030  00000000  00000000  00000104  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000134  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000038  00000000  00000000  00000170  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   000006ea  00000000  00000000  000001a8  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 000005eb  00000000  00000000  00000892  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   000002f3  00000000  00000000  00000e7d  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000054  00000000  00000000  00001170  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    00000335  00000000  00000000  000011c4  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    00000113  00000000  00000000  000014f9  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000028  00000000  00000000  0000160c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	12 c0       	rjmp	.+36     	; 0x26 <__ctors_end>
+   2:	19 c0       	rjmp	.+50     	; 0x36 <__bad_interrupt>
+   4:	18 c0       	rjmp	.+48     	; 0x36 <__bad_interrupt>
+   6:	17 c0       	rjmp	.+46     	; 0x36 <__bad_interrupt>
+   8:	16 c0       	rjmp	.+44     	; 0x36 <__bad_interrupt>
+   a:	15 c0       	rjmp	.+42     	; 0x36 <__bad_interrupt>
+   c:	14 c0       	rjmp	.+40     	; 0x36 <__bad_interrupt>
+   e:	13 c0       	rjmp	.+38     	; 0x36 <__bad_interrupt>
+  10:	12 c0       	rjmp	.+36     	; 0x36 <__bad_interrupt>
+  12:	11 c0       	rjmp	.+34     	; 0x36 <__bad_interrupt>
+  14:	10 c0       	rjmp	.+32     	; 0x36 <__bad_interrupt>
+  16:	0f c0       	rjmp	.+30     	; 0x36 <__bad_interrupt>
+  18:	0e c0       	rjmp	.+28     	; 0x36 <__bad_interrupt>
+  1a:	0d c0       	rjmp	.+26     	; 0x36 <__bad_interrupt>
+  1c:	0c c0       	rjmp	.+24     	; 0x36 <__bad_interrupt>
+  1e:	0b c0       	rjmp	.+22     	; 0x36 <__bad_interrupt>
+  20:	0a c0       	rjmp	.+20     	; 0x36 <__bad_interrupt>
+  22:	09 c0       	rjmp	.+18     	; 0x36 <__bad_interrupt>
+  24:	08 c0       	rjmp	.+16     	; 0x36 <__bad_interrupt>
+
+00000026 <__ctors_end>:
+  26:	11 24       	eor	r1, r1
+  28:	1f be       	out	0x3f, r1	; 63
+  2a:	cf e5       	ldi	r28, 0x5F	; 95
+  2c:	d4 e0       	ldi	r29, 0x04	; 4
+  2e:	de bf       	out	0x3e, r29	; 62
+  30:	cd bf       	out	0x3d, r28	; 61
+  32:	20 d0       	rcall	.+64     	; 0x74 <main>
+  34:	3b c0       	rjmp	.+118    	; 0xac <_exit>
+
+00000036 <__bad_interrupt>:
+  36:	e4 cf       	rjmp	.-56     	; 0x0 <__vectors>
+
+00000038 <spi_init_master>:
+unsigned char spi_tranceiver (unsigned char data)
+{
+	SPDR = data;                       //Load data into the buffer
+	while(!(SPSR)&(1<<SPIF));          //Wait until transmission complete
+	return(SPDR);                      //Return received data
+}
+  38:	88 e2       	ldi	r24, 0x28	; 40
+  3a:	87 bb       	out	0x17, r24	; 23
+  3c:	81 e5       	ldi	r24, 0x51	; 81
+  3e:	8d b9       	out	0x0d, r24	; 13
+  40:	08 95       	ret
+
+00000042 <led_blink>:
+
+//Function to blink LED
+void led_blink (uint8_t i)
+{
+	//Blink LED "i" number of times
+	for (; i>0; --i)
+  42:	88 23       	and	r24, r24
+  44:	b1 f0       	breq	.+44     	; 0x72 <led_blink+0x30>
+	{
+		PORTD|=(1<<0);
+  46:	90 9a       	sbi	0x12, 0	; 18
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  48:	2f ef       	ldi	r18, 0xFF	; 255
+  4a:	31 ee       	ldi	r19, 0xE1	; 225
+  4c:	94 e0       	ldi	r25, 0x04	; 4
+  4e:	21 50       	subi	r18, 0x01	; 1
+  50:	30 40       	sbci	r19, 0x00	; 0
+  52:	90 40       	sbci	r25, 0x00	; 0
+  54:	e1 f7       	brne	.-8      	; 0x4e <led_blink+0xc>
+  56:	00 c0       	rjmp	.+0      	; 0x58 <led_blink+0x16>
+  58:	00 00       	nop
+		_delay_ms(100);
+		PORTD=(0<<0);
+  5a:	12 ba       	out	0x12, r1	; 18
+  5c:	2f ef       	ldi	r18, 0xFF	; 255
+  5e:	31 ee       	ldi	r19, 0xE1	; 225
+  60:	94 e0       	ldi	r25, 0x04	; 4
+  62:	21 50       	subi	r18, 0x01	; 1
+  64:	30 40       	sbci	r19, 0x00	; 0
+  66:	90 40       	sbci	r25, 0x00	; 0
+  68:	e1 f7       	brne	.-8      	; 0x62 <led_blink+0x20>
+  6a:	00 c0       	rjmp	.+0      	; 0x6c <led_blink+0x2a>
+  6c:	00 00       	nop
+
+//Function to blink LED
+void led_blink (uint8_t i)
+{
+	//Blink LED "i" number of times
+	for (; i>0; --i)
+  6e:	81 50       	subi	r24, 0x01	; 1
+  70:	51 f7       	brne	.-44     	; 0x46 <led_blink+0x4>
+  72:	08 95       	ret
+
+00000074 <main>:
+}
+
+//Main
+int main(void)
+{
+	spi_init_master();                  //Initialize SPI Master
+  74:	e1 df       	rcall	.-62     	; 0x38 <spi_init_master>
+	DDRD |= 0x01;                       //PD0 as Output
+  76:	88 9a       	sbi	0x11, 0	; 17
+	DDRC =(1<<0);
+  78:	81 e0       	ldi	r24, 0x01	; 1
+  7a:	84 bb       	out	0x14, r24	; 20
+	unsigned char data;                 //Received data stored here
+	uint8_t x = 0;                      //Counter value which is sent
+  7c:	c0 e0       	ldi	r28, 0x00	; 0
+	
+	while(1)
+	{
+		PORTC = (1<<0);
+  7e:	d1 e0       	ldi	r29, 0x01	; 1
+  80:	d5 bb       	out	0x15, r29	; 21
+		data = 0x00;                    //Reset ACK in "data"
+		data = spi_tranceiver(++x);     //Send "x", receive ACK in "data"
+  82:	cf 5f       	subi	r28, 0xFF	; 255
+}
+
+//Function to send and receive data
+unsigned char spi_tranceiver (unsigned char data)
+{
+	SPDR = data;                       //Load data into the buffer
+  84:	cf b9       	out	0x0f, r28	; 15
+	while(!(SPSR)&(1<<SPIF));          //Wait until transmission complete
+  86:	8e b1       	in	r24, 0x0e	; 14
+	return(SPDR);                      //Return received data
+  88:	8f b1       	in	r24, 0x0f	; 15
+	while(1)
+	{
+		PORTC = (1<<0);
+		data = 0x00;                    //Reset ACK in "data"
+		data = spi_tranceiver(++x);     //Send "x", receive ACK in "data"
+		if(data == ACK) {               //Check condition
+  8a:	8e 37       	cpi	r24, 0x7E	; 126
+  8c:	19 f4       	brne	.+6      	; 0x94 <main+0x20>
+			//If received data is the same as ACK, blink LED "x" number of times
+			led_blink(x);
+  8e:	8c 2f       	mov	r24, r28
+  90:	d8 df       	rcall	.-80     	; 0x42 <led_blink>
+  92:	02 c0       	rjmp	.+4      	; 0x98 <main+0x24>
+		}
+		else {
+			//If received data is not ACK, then blink LED for a long time so as to determine error
+			led_blink(LONG_TIME);
+  94:	80 e1       	ldi	r24, 0x10	; 16
+  96:	d5 df       	rcall	.-86     	; 0x42 <led_blink>
+  98:	2f ef       	ldi	r18, 0xFF	; 255
+  9a:	89 e6       	ldi	r24, 0x69	; 105
+  9c:	98 e1       	ldi	r25, 0x18	; 24
+  9e:	21 50       	subi	r18, 0x01	; 1
+  a0:	80 40       	sbci	r24, 0x00	; 0
+  a2:	90 40       	sbci	r25, 0x00	; 0
+  a4:	e1 f7       	brne	.-8      	; 0x9e <main+0x2a>
+  a6:	00 c0       	rjmp	.+0      	; 0xa8 <main+0x34>
+  a8:	00 00       	nop
+  aa:	ea cf       	rjmp	.-44     	; 0x80 <main+0xc>
+
+000000ac <_exit>:
+  ac:	f8 94       	cli
+
+000000ae <__stop_program>:
+  ae:	ff cf       	rjmp	.-2      	; 0xae <__stop_program>
